@@ -1,7 +1,10 @@
 [project]
-name = "mlflow"
+name = "mlflow_project"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["scikit-learn"]
+dependencies = [
+    "mlflow>=3.6.0",
+    "scikit-learn",
+]
