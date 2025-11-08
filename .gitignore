@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+mlruns/
+data/
+artifacts/
+.env
+.pytest_cache/
+data.csv
+uv.lock
