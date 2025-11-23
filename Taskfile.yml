@@ -15,7 +15,10 @@ tasks:
     desc: Train and log experiment via MLFlow
     deps: [sync]
     cmds:
-      - uv run python main.py track --experiment housing-prices
+      - |
+        uv run python main.py track \
+          --experiment ${EXPERIMENT:-housing-prices} \
+          ${RUN_NAME:+--run-name "$RUN_NAME"}
   mlflow-ui:
     desc: Launch the MLFlow local UI
     deps: [sync]
