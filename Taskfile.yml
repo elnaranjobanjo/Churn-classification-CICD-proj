@@ -1,0 +1,11 @@
+version: "3"
+
+tasks:
+  sync:
+    desc: Sync project dependencies with uv
+    cmds:
+      - uv sync
+  run:
+    desc: Execute the app via uv
+    cmds:
+      - uv run main.py
