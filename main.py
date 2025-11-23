@@ -22,6 +22,7 @@ def build_parser() -> ArgumentParser:
     parser = ArgumentParser(description="MLFlow project orchestration CLI")
     subparsers = parser.add_subparsers(dest="command")
 
+    # Flags reserved for tracking experiments.
     track_parser = subparsers.add_parser(
         "track", help="Train model and log results with MLFlow"
     )
