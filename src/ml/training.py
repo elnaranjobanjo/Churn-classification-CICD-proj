@@ -6,6 +6,8 @@ import logging
 from dataclasses import dataclass
 from typing import Dict
 
+import numpy as np
+from numpy.typing import NDArray
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from sklearn.model_selection import train_test_split
 from xgboost import XGBRegressor
@@ -19,6 +21,7 @@ logger = logging.getLogger(__name__)
 class TrainingResult:
     model: XGBRegressor
     metrics: Dict[str, float]
+    input_example: NDArray[np.float64]
 
 
 def train_xgboost(
@@ -60,4 +63,5 @@ def train_xgboost(
 
     metrics = {"rmse": float(rmse), "mae": float(mae)}
     logger.info("XGBoost metrics: %s", metrics)
-    return TrainingResult(model=model, metrics=metrics)
+    input_example = X_test[:5]
+    return TrainingResult(model=model, metrics=metrics, input_example=input_example)

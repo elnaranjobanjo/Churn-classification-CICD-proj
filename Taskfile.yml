@@ -5,13 +5,19 @@ tasks:
     desc: Sync project dependencies with uv
     cmds:
       - uv sync --extra dev
-  run:
-    desc: Execute the app via uv
-    cmds:
-      - uv run main.py
   style:
     desc: Run Ruff autofix, format, then MyPy
     deps: [sync]
     cmds:
       - uv run ruff check . --fix
       - uv run ruff format .
+  track:
+    desc: Train and log experiment via MLFlow
+    deps: [sync]
+    cmds:
+      - uv run python main.py track --experiment housing-prices
+  mlflow-ui:
+    desc: Launch the MLFlow local UI
+    deps: [sync]
+    cmds:
+      - uv run mlflow ui --backend-store-uri ./mlruns

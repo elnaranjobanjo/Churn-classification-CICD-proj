@@ -2,3 +2,4 @@ uv.lock
 *egg-info/
 **/__pycache__/
 project.log
+mlruns/
