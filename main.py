@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 from typing import Optional
 
-from orchestration.tracking import run_training_with_tracking
+from MLOps.tracking import run_training_with_tracking
 
 LOG_FORMAT = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
 LOG_FILE = Path("project.log")
