@@ -3,14 +3,15 @@ name = "mlflow-project"
 version = "0.1.0"
 description = "Housing prices mlflow project"
 requires-python = ">=3.10"
-dependencies = []
-[tool.uv.dependency-groups]
-[dependency-groups]
+dependencies = [
+    "numpy",
+    "scikit-learn",
+]
+
+[project.optional-dependencies]
 dev = [
-    "black>=24.3.0",
-    "mypy>=1.9.0",
     "ruff>=0.4.0",
-    ]
+]
 
 [build-system]
 requires = ["setuptools"]

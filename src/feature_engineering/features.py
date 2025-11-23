@@ -6,14 +6,17 @@ import logging
 from typing import Tuple
 
 import numpy as np
+from numpy.typing import NDArray
 from sklearn.datasets import fetch_california_housing
 
 logger = logging.getLogger(__name__)
 
 
-def load_data() -> Tuple[np.ndarray, np.ndarray]:
+def load_data() -> Tuple[NDArray[np.float64], NDArray[np.float64]]:
     """Return feature matrix and target vector from the California housing dataset."""
     logger.info("Fetching California housing dataset (numpy arrays)")
-    dataset = fetch_california_housing(as_frame=False)
-    logger.debug("Dataset shapes -> features: %s, target: %s", dataset.data.shape, dataset.target.shape)
-    return dataset.data, dataset.target
+    features, target = fetch_california_housing(as_frame=False, return_X_y=True)
+    logger.debug(
+        "Dataset shapes -> features: %s, target: %s", features.shape, target.shape
+    )
+    return features, target

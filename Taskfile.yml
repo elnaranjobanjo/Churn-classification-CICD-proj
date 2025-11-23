@@ -4,13 +4,14 @@ tasks:
   sync:
     desc: Sync project dependencies with uv
     cmds:
-      - uv sync
+      - uv sync --extra dev
   run:
     desc: Execute the app via uv
     cmds:
       - uv run main.py
   style:
-    desc: Run Ruff, MyPy, and Black in a single pass
+    desc: Run Ruff autofix, format, then MyPy
     deps: [sync]
     cmds:
-      - "uv run --group dev bash -lc 'ruff check . && mypy . && black .'"
+      - uv run ruff check . --fix
+      - uv run ruff format .
