@@ -9,3 +9,8 @@ tasks:
     desc: Execute the app via uv
     cmds:
       - uv run main.py
+  style:
+    desc: Run Ruff, MyPy, and Black in a single pass
+    deps: [sync]
+    cmds:
+      - "uv run --group dev bash -lc 'ruff check . && mypy . && black .'"
