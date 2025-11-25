@@ -4,3 +4,4 @@ uv.lock
 project.log
 mlruns/
 .env
+feature_store/

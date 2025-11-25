@@ -8,6 +8,8 @@ dependencies = [
     "scikit-learn",
     "mlflow",
     "xgboost",
+    "feast",
+    "duckdb",
 ]
 
 [project.optional-dependencies]
