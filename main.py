@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import logging
+import os
 from argparse import ArgumentParser
 from pathlib import Path
 from typing import Optional
 
-from MLOps.tracking import run_training_with_tracking
-from MLOps.registry import register_run
+# from MLOps.tracking import run_training_with_tracking
+# from MLOps.registry import register_run
+from feature_engineering import run_bitcoin_ingestion
 
 LOG_FORMAT = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
 LOG_FILE = Path("project.log")
@@ -23,37 +25,49 @@ def build_parser() -> ArgumentParser:
     parser = ArgumentParser(description="MLFlow project orchestration CLI")
     subparsers = parser.add_subparsers(dest="command")
 
-    # Flags reserved for tracking experiments.
-    track_parser = subparsers.add_parser(
-        "track", help="Train model and log results with MLFlow"
+    # Flags reserved for fetching and storing data
+    ingest_parser = subparsers.add_parser(
+        "ingest",
+        help="Fetch Bitcoin candles and persist them via DuckDB",
     )
-    track_parser.add_argument(
-        "--experiment",
-        default="default",
-        help="MLFlow experiment name",
-    )
-    track_parser.add_argument(
-        "--run-name",
-        default=None,
-        help="Optional MLFlow run name",
+    ingest_parser.add_argument(
+        "--config",
+        type=Path,
+        default=Path(os.getenv("INGEST_CONFIG", "config/bitcoin_ingest.json")),
+        help="Optional path to ingestion JSON config",
     )
 
-    # Flags reserved for model registration
-    register_parser = subparsers.add_parser(
-        "register",
-        help="Register a tracked run's model in the MLFlow registry",
-    )
-    register_parser.add_argument("--run-id", required=True, help="Run ID to register")
-    register_parser.add_argument(
-        "--model-name",
-        required=True,
-        help="Model name to use in the registry",
-    )
-    register_parser.add_argument(
-        "--alias",
-        default=None,
-        help="Optional alias (e.g., staging, prod) for the registered version",
-    )
+    # Flags reserved for tracking experiments.
+    # track_parser = subparsers.add_parser(
+    #     "track", help="Train model and log results with MLFlow"
+    # )
+    # track_parser.add_argument(
+    #     "--experiment",
+    #     default="default",
+    #     help="MLFlow experiment name",
+    # )
+    # track_parser.add_argument(
+    #     "--run-name",
+    #     default=None,
+    #     help="Optional MLFlow run name",
+    # )
+
+    # # Flags reserved for model registration
+    # register_parser = subparsers.add_parser(
+    #     "register",
+    #     help="Register a tracked run's model in the MLFlow registry",
+    # )
+    # register_parser.add_argument("--run-id", required=True, help="Run ID to register")
+    # register_parser.add_argument(
+    #     "--model-name",
+    #     required=True,
+    #     help="Model name to use in the registry",
+    # )
+    # register_parser.add_argument(
+    #     "--alias",
+    #     default=None,
+    #     help="Optional alias (e.g., staging, prod) for the registered version",
+    # )
 
     return parser
 
@@ -62,23 +76,26 @@ def main(argv: Optional[list[str]] = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    if args.command == "track":
-        logger.info("Executing tracked training run")
-        run_training_with_tracking(args.experiment, args.run_name)
-        logger.info("Tracking run finished")
+    if args.command == "ingest":
+        inserted = run_bitcoin_ingestion(args.config)
+        logger.info("Stored %s BTC candles", inserted)
         return
 
-    if args.command == "register":
-        logger.info(
-            "Registering run %s into model %s",
-            args.run_id,
-            args.model_name,
-        )
-        register_run(args.run_id, args.model_name, args.alias)
-        logger.info("Registration finished")
-        return
+    # if args.command == "track":
+    #     logger.info("Executing tracked training run")
+    #     run_training_with_tracking(args.experiment, args.run_name)
+    #     logger.info("Tracking run finished")
+    #     return
 
-    logger.warning("No command provided")
+    # if args.command == "register":
+    #     logger.info(
+    #         "Registering run %s into model %s",
+    #         args.run_id,
+    #         args.model_name,
+    #     )
+    #     register_run(args.run_id, args.model_name, args.alias)
+    #     logger.info("Registration finished")
+    #     return
 
 
 if __name__ == "__main__":

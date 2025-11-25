@@ -12,6 +12,12 @@ tasks:
     cmds:
       - uv run ruff check . --fix
       - uv run ruff format .
+  ingest:
+    desc: Ingest Bitcoin candles via Binance and store them in DuckDB
+    deps: [sync]
+    cmds:
+      - |
+        uv run python main.py ingest
   track:
     desc: Train and log experiment via MLFlow
     deps: [sync]
