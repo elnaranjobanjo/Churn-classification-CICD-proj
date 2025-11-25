@@ -8,6 +8,7 @@ from typing import Optional
 
 from .clients import BinanceClient
 from .config import load_ingestion_config
+from .reader import count_candles
 from .singletons import get_binance_client, get_duckdb_storage
 from .storage import DuckDBStorage
 
@@ -36,4 +37,6 @@ def run_bitcoin_ingestion(
         start_time=config.start_time,
         end_time=config.end_time,
     )
-    return active_storage.upsert(candles)
+    new_rows = active_storage.upsert(candles)
+    total_rows = count_candles(db_path=config.db_path, table=config.table)
+    return new_rows, total_rows

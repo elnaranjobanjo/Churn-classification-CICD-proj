@@ -78,8 +78,8 @@ def main(argv: Optional[list[str]] = None) -> None:
     args = parser.parse_args(argv)
 
     if args.command == "ingest":
-        inserted = run_bitcoin_ingestion(args.config)
-        logger.info("Stored %s BTC candles", inserted)
+        new_rows, total_rows = run_bitcoin_ingestion(args.config)
+        logger.info("Stored %s new BTC candles (total=%s)", new_rows, total_rows)
         report_path = generate_ingestion_report()
         logger.info("Generated ingestion report at %s", report_path)
         return

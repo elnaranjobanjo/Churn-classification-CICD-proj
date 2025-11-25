@@ -74,3 +74,21 @@ def load_candles_from_duckdb(
         for row in rows
     ]
     return candles
+
+
+def count_candles(
+    *,
+    db_path: str | Path | None = None,
+    table: str = "btc_candles",
+) -> int:
+    """Return the number of stored candles without loading them."""
+    path = Path(db_path or DEFAULT_FEATURE_DB_PATH)
+    if not path.exists():
+        raise FileNotFoundError(f"DuckDB database {path} does not exist")
+
+    table_name = _validated_identifier(table)
+    conn = duckdb.connect(str(path))
+    try:
+        return conn.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
+    finally:
+        conn.close()
