@@ -1,3 +1,3 @@
-from .ingestion import store_candles_in_duckdb
+from .ingestion import run_bitcoin_ingestion
 
-__all__ = ["store_candles_in_duckdb"]
+__all__ = ["run_bitcoin_ingestion"]
