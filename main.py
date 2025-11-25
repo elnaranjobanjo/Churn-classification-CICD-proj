@@ -80,7 +80,8 @@ def main(argv: Optional[list[str]] = None) -> None:
     if args.command == "ingest":
         inserted = run_bitcoin_ingestion(args.config)
         logger.info("Stored %s BTC candles", inserted)
-        generate_ingestion_report()
+        report_path = generate_ingestion_report()
+        logger.info("Generated ingestion report at %s", report_path)
         return
 
     # if args.command == "track":

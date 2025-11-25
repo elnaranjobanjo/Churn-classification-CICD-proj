@@ -1,5 +1,5 @@
 {
-  "interval": "1h",
+  "interval": "1m",
   "limit": 500,
   "table": "btc_candles"
 }
