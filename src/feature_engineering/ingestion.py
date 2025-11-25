@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 from .clients import BinanceClient
-from .config import IngestionConfig, load_ingestion_config
+from .config import load_ingestion_config
 from .singletons import get_binance_client, get_duckdb_storage
 from .storage import DuckDBStorage
 
