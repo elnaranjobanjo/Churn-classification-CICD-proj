@@ -41,7 +41,8 @@ def load_candles_from_duckdb(
             volume_usd,
             trade_count,
             taker_buy_volume_btc,
-            taker_buy_volume_usd
+            taker_buy_volume_usd,
+            price_increase_label
         FROM {table_name}
         {order_clause}
     """
@@ -70,6 +71,7 @@ def load_candles_from_duckdb(
             trade_count=row[8],
             taker_buy_volume_btc=row[9],
             taker_buy_volume_usd=row[10],
+            price_increase_label=row[11],
         )
         for row in rows
     ]

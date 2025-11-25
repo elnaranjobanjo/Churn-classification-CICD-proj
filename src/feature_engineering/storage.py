@@ -124,9 +124,7 @@ class DuckDBStorage:
         ).fetchone()
         return result[0] if result else None
 
-    def _fetch_existing_keys(
-        self, conn: duckdb.DuckDBPyConnection, keys: list
-    ) -> set:
+    def _fetch_existing_keys(self, conn: duckdb.DuckDBPyConnection, keys: list) -> set:
         if not keys:
             return set()
         placeholders = ",".join(["?"] * len(keys))

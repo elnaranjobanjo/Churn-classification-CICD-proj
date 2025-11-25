@@ -31,6 +31,7 @@ class BitcoinCandle:
     trade_count: int
     taker_buy_volume_btc: float
     taker_buy_volume_usd: float
+    price_increase_label: int = 0
 
     @staticmethod
     def from_binance(payload: Sequence[str | float | int]) -> "BitcoinCandle":
