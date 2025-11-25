@@ -9,6 +9,7 @@ from typing import Optional
 # from MLOps.tracking import run_training_with_tracking
 # from MLOps.registry import register_run
 from feature_engineering import run_bitcoin_ingestion
+from reporting import generate_ingestion_report
 
 LOG_FORMAT = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
 LOG_FILE = Path("project.log")
@@ -79,6 +80,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     if args.command == "ingest":
         inserted = run_bitcoin_ingestion(args.config)
         logger.info("Stored %s BTC candles", inserted)
+        generate_ingestion_report()
         return
 
     # if args.command == "track":

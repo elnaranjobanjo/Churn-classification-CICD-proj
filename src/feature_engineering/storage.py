@@ -92,14 +92,3 @@ class DuckDBStorage:
             )
             """
         )
-
-
-def store_candles_in_duckdb(
-    candles: Iterable[BitcoinCandle],
-    *,
-    db_path: str | Path = DEFAULT_FEATURE_DB_PATH,
-    table: str = "btc_candles",
-) -> int:
-    """Persist Bitcoin candles into a DuckDB table for downstream feature serving."""
-    storage = DuckDBStorage(db_path=db_path, table=table)
-    return storage.upsert(candles)

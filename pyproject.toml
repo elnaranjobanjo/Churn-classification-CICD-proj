@@ -5,11 +5,14 @@ description = "Housing prices mlflow project"
 requires-python = ">=3.10"
 dependencies = [
     "numpy",
+    "pandas",
     "scikit-learn",
     "mlflow",
     "xgboost",
     "feast",
     "duckdb",
+    "reportlab",
+    "matplotlib",
 ]
 
 [project.optional-dependencies]

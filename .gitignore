@@ -5,3 +5,4 @@ project.log
 mlruns/
 .env
 feature_store/
+reports/
