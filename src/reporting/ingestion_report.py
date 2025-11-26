@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from reportlab.lib.units import inch
 
-from feature_engineering import load_candles_from_duckdb
-from feature_engineering.config import load_ingestion_config
+from data_ingestion_service import load_candles_from_duckdb
+from data_ingestion_service.config import load_ingestion_config
 from .report_maker import ReportMaker
 
 _METRIC_CHARTS = (

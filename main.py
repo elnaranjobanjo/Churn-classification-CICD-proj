@@ -8,7 +8,7 @@ from typing import Optional
 
 # from MLOps.tracking import run_training_with_tracking
 # from MLOps.registry import register_run
-from feature_engineering import run_bitcoin_ingestion
+from data_ingestion_service import run_bitcoin_ingestion
 from reporting import generate_ingestion_report
 
 LOG_FORMAT = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"

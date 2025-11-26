@@ -12,7 +12,7 @@ from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from sklearn.model_selection import train_test_split
 from xgboost import XGBRegressor
 
-from feature_engineering.features import load_data
+from data_ingestion_service.features import load_data
 
 logger = logging.getLogger(__name__)
 

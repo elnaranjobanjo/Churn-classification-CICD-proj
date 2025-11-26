@@ -11,8 +11,8 @@ This project is a lightweight, end-to-end sandbox for the ML lifecycle focused o
    - The command logs how many **new** rows were inserted and the total row count, and this metadata can be written to `feature_store/ingestion_stats.json` for quick reference.
 
 2. **Feature access helpers**
-   - `feature_engineering.load_candles_from_duckdb()` returns typed `BitcoinCandle` objects (including the label) for analysis or modeling.
-   - `feature_engineering.count_candles()` returns the current row count without loading the entire table.
+   - `data_ingestion_service.load_candles_from_duckdb()` returns typed `BitcoinCandle` objects (including the label) for analysis or modeling.
+   - `data_ingestion_service.reader.count_candles()` returns the current row count without loading the entire table.
 
 3. **PDF reporting**
    - After each ingest we generate `reports/ingestion/<timestamp>/report.pdf` plus accompanying images so we can visually inspect the latest data. The report covers summary stats, OHLCV plots, and a scatter plot for the binary label.
@@ -38,7 +38,7 @@ Relevant environment variables (see `.env`):
 
 ## Code Layout
 
-- `src/feature_engineering/`: Binance client, config, DuckDB storage, ingestion entry point, load/count helpers
+- `src/data_ingestion_service/`: Binance client, config, DuckDB storage, ingestion entry point, load/count helpers
 - `src/reporting/`: PDF report generation utilities
 - `src/ml/`: (up next) model training routines
 - `src/MLOps/`: MLflow tracking/registry orchestration (to be re-enabled after modeling)
