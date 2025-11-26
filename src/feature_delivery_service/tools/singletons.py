@@ -3,12 +3,10 @@
 from __future__ import annotations
 from .binance_client import BinanceClient
 
-# from .storage import DuckDBStorage
-
-# _CLIENT_CACHE: Dict[Tuple[str, str, int], BinanceClient] = {}
-# _STORAGE_CACHE: Dict[Tuple[str, str], DuckDBStorage] = {}
+from .duckdb_storage_manager import DuckDBStorageManager
 
 global_binance_client = None
+global_duckdb_storage_manager = None
 
 
 def get_binance_client() -> BinanceClient:
@@ -16,6 +14,13 @@ def get_binance_client() -> BinanceClient:
     if global_binance_client == None:
         global_binance_client = BinanceClient()
     return global_binance_client
+
+
+def get_duckdb_storage_manager() -> DuckDBStorageManager:
+    global global_duckdb_storage_manager
+    if global_duckdb_storage_manager == None:
+        global_duckdb_storage_manager = DuckDBStorageManager()
+    return global_duckdb_storage_manager
 
 
 # def get_duckdb_storage(

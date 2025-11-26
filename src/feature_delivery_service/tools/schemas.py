@@ -6,6 +6,21 @@ from typing import Sequence
 from datetime import datetime
 from typing import Tuple
 
+
+def build_dataclass(
+    fields: Sequence[tuple[str, type]] = None,
+    name: str = "BaseCandle",
+):
+    """Create a dataclass with base + engineered fields."""
+    return make_dataclass(
+        name,
+        [(field, typ) for field, typ in fields],
+        bases=(),
+        frozen=True,
+        slots=True,
+    )
+
+
 # base schema from your candles as provided by binance
 BASE_FIELDS = [
     ("open_time", datetime),
@@ -21,33 +36,19 @@ BASE_FIELDS = [
     ("taker_buy_volume_usd", float),
 ]
 
-# BASE_FIELDS_TYPES: Tuple[str, ...] = (
-#     "TIMESTAMP",
-#     "TIMESTAMP",
-#     "DOUBLE",
-#     "DOUBLE",
-#     "DOUBLE",
-#     "DOUBLE",
-#     "DOUBLE",
-#     "DOUBLE",
-#     "BIGINT",
-#     "DOUBLE",
-#     "DOUBLE",
-# )
-
-
-def build_dataclass(
-    fields: Sequence[tuple[str, type]] = None,
-    name: str = "BaseCandle",
-):
-    """Create a dataclass with base + engineered fields."""
-    return make_dataclass(
-        name,
-        [(field, typ) for field, typ in fields],
-        bases=(),
-        frozen=True,
-        slots=True,
-    )
+BASE_FIELDS_TYPES: Tuple[str, ...] = (
+    "TIMESTAMP",
+    "TIMESTAMP",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "BIGINT",
+    "DOUBLE",
+    "DOUBLE",
+)
 
 
 def build_BitcoinCandle():

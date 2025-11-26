@@ -3,16 +3,9 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
-from typing import Optional
-
-from .tools.binance_client import BinanceClient
 from .tools.config import load_ingestion_config
-
-# from .reader import count_candles
-from .tools.singletons import get_binance_client  # , get_duckdb_storage
-
-# from .storage import DuckDBStorage
+from .tools.singletons import get_binance_client, get_duckdb_storage_manager
+from .tools.schemas import BASE_FIELDS, BASE_FIELDS_TYPES
 
 logger = logging.getLogger(__name__)
 
@@ -30,14 +23,21 @@ def run_bitcoin_ingestion(
         config.table,
     )
     active_client = get_binance_client()
-    # active_storage = get_duckdb_storage(config, storage)
+    active_storage = get_duckdb_storage_manager()
     candles = active_client.fetch_candles(
         interval=config.interval,
         limit=config.limit,
         start_time=config.start_time,
         end_time=config.end_time,
     )
-    # new_rows = active_storage.upsert(candles)
+    column_names = [field for field, _ in BASE_FIELDS]
+    new_rows = active_storage.upsert(
+        table=config.table,
+        columns=column_names,
+        types=list(BASE_FIELDS_TYPES),
+        items=candles,
+        sort_key="open_time",
+    )
     # total_rows = count_candles(db_path=config.db_path, table=config.table)
-    # return new_rows, total_rows
-    return 0, 0
+    return new_rows  # , total_rows
+    # return 0, 0

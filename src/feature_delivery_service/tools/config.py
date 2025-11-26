@@ -68,7 +68,7 @@
 #         )
 from dataclasses import dataclass
 import os
-from typing import Any, Mapping, Optional
+from typing import Any, Optional
 from pathlib import Path
 
 config_path = os.getenv("INGEST_CONFIG", "config/bitcoin_ingest.json")
