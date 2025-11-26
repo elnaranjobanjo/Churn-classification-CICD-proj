@@ -47,10 +47,10 @@ class DuckDBStorageManager:
             logger.info("No candles supplied for DuckDB storage")
             return 0
 
-        self._ensure_schema(
-            self.duckdb_create_table_statement(columns, types, table)
+        self._ensure_schema(self.duckdb_create_table_statement(columns, types, table))
+        existing = self._fetch_existing_keys(
+            table, [getattr(c, sort_key) for c in ordered], sort_key
         )
-        existing = self._fetch_existing_keys(table, [getattr(c, sort_key) for c in ordered], sort_key)
         rows = [self.row(item, columns) for item in ordered]
         placeholders = ", ".join(["?"] * len(columns))
         columns_str = ", ".join(columns)

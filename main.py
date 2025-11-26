@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import os
 from argparse import ArgumentParser
 from pathlib import Path
 from typing import Optional
@@ -24,14 +23,16 @@ logger = logging.getLogger(__name__)
 
 
 def build_parser() -> ArgumentParser:
-    parser = ArgumentParser(description="MLFlow project orchestration CLI")
-    subparsers = parser.add_subparsers(dest="command")
+    parser = ArgumentParser(
+        description="Bitcoin-ML-cycle-sandbox-project orchestration CLI"
+    )
+    # subparsers = parser.add_subparsers(dest="command")
 
     # Flags reserved for fetching and storing data
-    ingest_parser = subparsers.add_parser(
-        "ingest",
-        help="Fetch Bitcoin candles and persist them via DuckDB",
-    )
+    # ingest_parser = subparsers.add_parser(
+    #     "ingest",
+    #     help="Fetch Bitcoin candles and persist them via DuckDB",
+    # )
 
     # Flags reserved for tracking experiments.
     # track_parser = subparsers.add_parser(

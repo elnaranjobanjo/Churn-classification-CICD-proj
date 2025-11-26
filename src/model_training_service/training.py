@@ -1,33 +1,33 @@
-"""Model training routines."""
+# """Model training routines."""
 
-from __future__ import annotations
+# from __future__ import annotations
 
-import logging
-from dataclasses import dataclass
-from typing import Dict
+# import logging
+# from dataclasses import dataclass
+# from typing import Dict
 
-import numpy as np
-from numpy.typing import NDArray
-from sklearn.metrics import mean_absolute_error, root_mean_squared_error
-  from sklearn.model_selection import TimeSeriesSplit
-import os
-from xgboost import XGBRegressor
+# import numpy as np
+# from numpy.typing import NDArray
+# from sklearn.metrics import mean_absolute_error, root_mean_squared_error
+#   from sklearn.model_selection import TimeSeriesSplit
+# import os
+# from xgboost import XGBRegressor
 
-from data_ingestion_service.schema import CANDLE_COLUMN_ORDER
-from data_ingestion_service.reader import load_candles_from_duckdb
+# from data_ingestion_service.schema import CANDLE_COLUMN_ORDER
+# from data_ingestion_service.reader import load_candles_from_duckdb
 
-logger = logging.getLogger(__name__)
-
-
-@dataclass
-class TrainingResult:
-    model: XGBRegressor
-    metrics: Dict[str, float]
-    input_example: NDArray[np.float64]
+# logger = logging.getLogger(__name__)
 
 
-def train_xgboost(val_size, limit):
-    candles = load_candles_from_duckdb(limit=limit, order_desc=False)
+# @dataclass
+# class TrainingResult:
+#     model: XGBRegressor
+#     metrics: Dict[str, float]
+#     input_example: NDArray[np.float64]
+
+
+# def train_xgboost(val_size, limit):
+#     candles = load_candles_from_duckdb(limit=limit, order_desc=False)
 
 
 # def train_xgboost(
