@@ -10,59 +10,13 @@ from typing import List, Optional, Sequence
 from urllib import error, parse, request
 
 from .config import DEFAULT_BINANCE_BASE_URL, DEFAULT_BITCOIN_SYMBOL
+from .schemas import build_BitcoinCandle
+
+BitcoinCandle = build_BitcoinCandle()
 
 logger = logging.getLogger(__name__)
 
 _USER_AGENT = "MLFlowProject/bitcoin-ingest"
-
-
-@dataclass(frozen=True, slots=True)
-class BitcoinCandle:
-    """Normalized container for a single BTC/USDT candlestick."""
-
-    open_time: datetime
-    close_time: datetime
-    open_price: float
-    high_price: float
-    low_price: float
-    close_price: float
-    volume_btc: float
-    volume_usd: float
-    trade_count: int
-    taker_buy_volume_btc: float
-    taker_buy_volume_usd: float
-    price_increase_label: int = 0
-
-    @staticmethod
-    def from_binance(payload: Sequence[str | float | int]) -> "BitcoinCandle":
-        """Convert a raw Binance kline payload into ``BitcoinCandle``."""
-        (
-            open_time,
-            open_price,
-            high_price,
-            low_price,
-            close_price,
-            volume_btc,
-            close_time,
-            volume_usd,
-            trade_count,
-            taker_buy_volume_btc,
-            taker_buy_volume_usd,
-            _ignore,
-        ) = payload
-        return BitcoinCandle(
-            open_time=datetime.fromtimestamp(int(open_time) / 1000),
-            close_time=datetime.fromtimestamp(int(close_time) / 1000),
-            open_price=float(open_price),
-            high_price=float(high_price),
-            low_price=float(low_price),
-            close_price=float(close_price),
-            volume_btc=float(volume_btc),
-            volume_usd=float(volume_usd),
-            trade_count=int(trade_count),
-            taker_buy_volume_btc=float(taker_buy_volume_btc),
-            taker_buy_volume_usd=float(taker_buy_volume_usd),
-        )
 
 
 class BinanceClient:

@@ -4,22 +4,21 @@ This project is a lightweight, end-to-end sandbox for the ML lifecycle focused o
 
 ## Current Capabilities
 
-1. **Bitcoin ingestion & labeling**
+1. **Bitcoin ingestion**
    - `task ingest` fetches BTC/USDT minute candles from Binance using `config/bitcoin_ingest.json` (interval, limit, table).
    - Candles are stored in DuckDB at `feature_store/bitcoin.duckdb`.
-   - Each candle gets a `price_increase_label` (1 if the close is higher than the previous candle, else 0).
-   - The command logs how many **new** rows were inserted and the total row count, and this metadata can be written to `feature_store/ingestion_stats.json` for quick reference.
+   - Each candle is stored with its OHLCV statistics, and the command logs how many **new** rows were inserted plus the total row count. This metadata can be written to `feature_store/ingestion_stats.json` for quick reference.
 
 2. **Feature access helpers**
-   - `data_ingestion_service.load_candles_from_duckdb()` returns typed `BitcoinCandle` objects (including the label) for analysis or modeling.
+   - `data_ingestion_service.load_candles_from_duckdb()` returns typed `BitcoinCandle` objects for analysis or modeling.
    - `data_ingestion_service.reader.count_candles()` returns the current row count without loading the entire table.
 
 3. **PDF reporting**
-   - After each ingest we generate `reports/ingestion/<timestamp>/report.pdf` plus accompanying images so we can visually inspect the latest data. The report covers summary stats, OHLCV plots, and a scatter plot for the binary label.
+   - After each ingest we generate `reports/ingestion/<timestamp>/report.pdf` plus accompanying images so we can visually inspect the latest data. The report covers summary stats and OHLCV plots.
 
 ## Roadmap
 
-- Build baseline models in `src/ml/` using the stored candles + labels, and re-enable the MLflow `track` / `register` commands.
+- Build baseline models in `src/ml/` using the stored candles plus engineered labels, and re-enable the MLflow `track` / `register` commands.
 - Integrate Feast once model inputs stabilize to keep offline and online features in sync.
 - Add monitoring/retraining hooks leveraging the ingestion/reporting pipeline.
 

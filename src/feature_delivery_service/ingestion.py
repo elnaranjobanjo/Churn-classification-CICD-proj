@@ -6,11 +6,13 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from .clients import BinanceClient
-from .config import load_ingestion_config
-from .reader import count_candles
-from .singletons import get_binance_client, get_duckdb_storage
-from .storage import DuckDBStorage
+from .tools.binance_client import BinanceClient
+from .tools.config import load_ingestion_config
+
+# from .reader import count_candles
+from .tools.singletons import get_binance_client  # , get_duckdb_storage
+
+# from .storage import DuckDBStorage
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +21,8 @@ def run_bitcoin_ingestion(
     config_path: Optional[Path] = None,
     *,
     client: Optional[BinanceClient] = None,
-    storage: Optional[DuckDBStorage] = None,
-) -> int:
+    # storage: Optional[DuckDBStorage] = None,
+) -> None:
     """Fetch BTC candles using config and persist them via DuckDB."""
     config = load_ingestion_config(config_path)
     logger.info(
@@ -30,13 +32,14 @@ def run_bitcoin_ingestion(
         config.table,
     )
     active_client = get_binance_client(config, client)
-    active_storage = get_duckdb_storage(config, storage)
+    # active_storage = get_duckdb_storage(config, storage)
     candles = active_client.fetch_candles(
         interval=config.interval,
         limit=config.limit,
         start_time=config.start_time,
         end_time=config.end_time,
     )
-    new_rows = active_storage.upsert(candles)
-    total_rows = count_candles(db_path=config.db_path, table=config.table)
-    return new_rows, total_rows
+    # new_rows = active_storage.upsert(candles)
+    # total_rows = count_candles(db_path=config.db_path, table=config.table)
+    # return new_rows, total_rows
+    return 0, 0

@@ -20,7 +20,6 @@ _METRIC_CHARTS = (
     ("Low Price", "low_price", "USD"),
     ("Volume BTC", "volume_btc", "BTC"),
     ("Trade Count", "trade_count", "count"),
-    ("Price Increase Label", "price_increase_label", "label"),
 )
 
 
@@ -56,11 +55,7 @@ def _summary_table(df: pd.DataFrame) -> pd.DataFrame:
 
 def _plot_metric(df: pd.DataFrame, column: str, unit: str, output: Path) -> Path:
     fig, ax = plt.subplots(figsize=(8, 3))
-    if unit == "label":
-        ax.scatter(df["open_time"], df[column], s=10)
-        ax.set_yticks([0, 1])
-    else:
-        ax.plot(df["open_time"], df[column])
+    ax.plot(df["open_time"], df[column])
     ax.set_title(column.replace("_", " ").title())
     ax.set_xlabel("Open Time")
     ax.set_ylabel(unit)

@@ -7,7 +7,7 @@ from typing import List, Optional
 
 import duckdb
 
-from .clients import BitcoinCandle
+from .tools.binance_client import BitcoinCandle
 from .config import DEFAULT_FEATURE_DB_PATH
 from .schema import CANDLE_COLUMN_ORDER, select_clause
 from .storage import _validated_identifier
@@ -61,7 +61,6 @@ def load_candles_from_duckdb(
             trade_count=row[8],
             taker_buy_volume_btc=row[9],
             taker_buy_volume_usd=row[10],
-            price_increase_label=row[11],
         )
         for row in rows
     ]

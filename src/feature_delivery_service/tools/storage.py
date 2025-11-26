@@ -8,9 +8,9 @@ from typing import Iterable
 
 import duckdb
 
-from .clients import BitcoinCandle
+from .binance_client import BitcoinCandle
 from .config import DEFAULT_FEATURE_DB_PATH
-from .schema import CANDLE_COLUMN_ORDER, candle_row, duckdb_schema_sql
+from .schemas import CANDLE_COLUMN_ORDER, candle_row, duckdb_schema_sql
 
 logger = logging.getLogger(__name__)
 
@@ -45,22 +45,14 @@ class DuckDBStorage:
         conn = duckdb.connect(str(self.db_path))
         try:
             self._ensure_schema(conn)
-            last_close = self._fetch_last_close(conn)
-            rows = []
             existing = self._fetch_existing_keys(conn, [c.open_time for c in ordered])
-            inserted_count = 0
-            for candle in ordered:
-                if last_close is None:
-                    label = 0
-                else:
-                    label = int(candle.close_price > last_close)
-                last_close = candle.close_price
-                rows.append(candle_row(candle, label=label))
+            rows = [candle_row(candle) for candle in ordered]
+            placeholders = ", ".join(["?"] * len(CANDLE_COLUMN_ORDER))
+            columns = ", ".join(CANDLE_COLUMN_ORDER)
             conn.executemany(
                 f"""
-                INSERT OR REPLACE INTO {self.table} VALUES (
-                    {", ".join(["?"] * len(CANDLE_COLUMN_ORDER))}
-                )
+                INSERT OR REPLACE INTO {self.table} ({columns})
+                VALUES ({placeholders})
                 """,
                 rows,
             )
@@ -79,19 +71,13 @@ class DuckDBStorage:
             row[1]
             for row in conn.execute(f"PRAGMA table_info('{self.table}')").fetchall()
         }
-        if "price_increase_label" not in columns:
+        if "price_increase_label" in columns:
             conn.execute(
                 f"""
                 ALTER TABLE {self.table}
-                ADD COLUMN price_increase_label INTEGER DEFAULT 0
+                DROP COLUMN price_increase_label
                 """
             )
-
-    def _fetch_last_close(self, conn: duckdb.DuckDBPyConnection) -> float | None:
-        result = conn.execute(
-            f"SELECT close_price FROM {self.table} ORDER BY open_time DESC LIMIT 1"
-        ).fetchone()
-        return result[0] if result else None
 
     def _fetch_existing_keys(self, conn: duckdb.DuckDBPyConnection, keys: list) -> set:
         if not keys:

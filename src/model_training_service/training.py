@@ -9,11 +9,12 @@ from typing import Dict
 import numpy as np
 from numpy.typing import NDArray
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
-from sklearn.model_selection import train_test_split
+  from sklearn.model_selection import TimeSeriesSplit
 import os
 from xgboost import XGBRegressor
 
-from data_ingestion_service.features import load_candles_from_duckdb
+from data_ingestion_service.schema import CANDLE_COLUMN_ORDER
+from data_ingestion_service.reader import load_candles_from_duckdb
 
 logger = logging.getLogger(__name__)
 
