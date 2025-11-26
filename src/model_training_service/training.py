@@ -10,9 +10,10 @@ import numpy as np
 from numpy.typing import NDArray
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from sklearn.model_selection import train_test_split
+import os
 from xgboost import XGBRegressor
 
-from data_ingestion_service.features import load_data
+from data_ingestion_service.features import load_candles_from_duckdb
 
 logger = logging.getLogger(__name__)
 
@@ -24,44 +25,53 @@ class TrainingResult:
     input_example: NDArray[np.float64]
 
 
-def train_xgboost(
-    test_size: float = 0.2,
-    random_state: int = 137,
-    max_depth: int = 6,
-    learning_rate: float = 0.1,
-    n_estimators: int = 300,
-) -> TrainingResult:
-    """Train an XGBoost regressor on the housing dataset."""
-    features, target = load_data()
-    X_train, X_test, y_train, y_test = train_test_split(
-        features,
-        target,
-        test_size=test_size,
-        random_state=random_state,
-    )
+def train_xgboost(val_size, limit):
+    candles = load_candles_from_duckdb(limit=limit, order_desc=False)
 
-    logger.info(
-        "Training XGBoost model with params max_depth=%s, learning_rate=%s, n_estimators=%s",
-        max_depth,
-        learning_rate,
-        n_estimators,
-    )
-    model = XGBRegressor(
-        max_depth=max_depth,
-        learning_rate=learning_rate,
-        n_estimators=n_estimators,
-        objective="reg:squarederror",
-        tree_method="hist",
-        n_jobs=-1,
-        random_state=random_state,
-    )
-    model.fit(X_train, y_train)
 
-    predictions = model.predict(X_test)
-    rmse = root_mean_squared_error(y_test, predictions)
-    mae = mean_absolute_error(y_test, predictions)
+# def train_xgboost(
+#     test_size: float = 0.2,
+#     random_state: int = 137,
+#     max_depth: int = 6,
+#     learning_rate: float = 0.1,
+#     n_estimators: int = 300,
+# ) -> TrainingResult:
+#     """Train an XGBoost regressor on the housing dataset."""
+#     features, target = load_candles_from_duckdb(
+#     db_path: str | Path | None = None,
+#     table: str = "btc_candles",
+#     limit: Optional[int] = None,
+#     order_desc: bool = False,
+#     )
+#     X_train, X_test, y_train, y_test = train_test_split(
+#         features,
+#         target,
+#         test_size=test_size,
+#         random_state=random_state,
+#     )
 
-    metrics = {"rmse": float(rmse), "mae": float(mae)}
-    logger.info("XGBoost metrics: %s", metrics)
-    input_example = X_test[:5]
-    return TrainingResult(model=model, metrics=metrics, input_example=input_example)
+#     logger.info(
+#         "Training XGBoost model with params max_depth=%s, learning_rate=%s, n_estimators=%s",
+#         max_depth,
+#         learning_rate,
+#         n_estimators,
+#     )
+#     model = XGBRegressor(
+#         max_depth=max_depth,
+#         learning_rate=learning_rate,
+#         n_estimators=n_estimators,
+#         objective="reg:squarederror",
+#         tree_method="hist",
+#         n_jobs=-1,
+#         random_state=random_state,
+#     )
+#     model.fit(X_train, y_train)
+
+#     predictions = model.predict(X_test)
+#     rmse = root_mean_squared_error(y_test, predictions)
+#     mae = mean_absolute_error(y_test, predictions)
+
+#     metrics = {"rmse": float(rmse), "mae": float(mae)}
+#     logger.info("XGBoost metrics: %s", metrics)
+#     input_example = X_test[:5]
+#     return TrainingResult(model=model, metrics=metrics, input_example=input_example)

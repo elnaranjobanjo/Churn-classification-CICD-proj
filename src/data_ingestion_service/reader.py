@@ -9,6 +9,7 @@ import duckdb
 
 from .clients import BitcoinCandle
 from .config import DEFAULT_FEATURE_DB_PATH
+from .schema import CANDLE_COLUMN_ORDER, select_clause
 from .storage import _validated_identifier
 
 
@@ -31,18 +32,7 @@ def load_candles_from_duckdb(
     order_clause = "ORDER BY open_time DESC" if order_desc else "ORDER BY open_time"
     query = f"""
         SELECT
-            open_time,
-            close_time,
-            open_price,
-            high_price,
-            low_price,
-            close_price,
-            volume_btc,
-            volume_usd,
-            trade_count,
-            taker_buy_volume_btc,
-            taker_buy_volume_usd,
-            price_increase_label
+            {select_clause()}
         FROM {table_name}
         {order_clause}
     """

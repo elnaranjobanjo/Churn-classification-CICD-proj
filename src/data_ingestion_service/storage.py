@@ -10,6 +10,7 @@ import duckdb
 
 from .clients import BitcoinCandle
 from .config import DEFAULT_FEATURE_DB_PATH
+from .schema import CANDLE_COLUMN_ORDER, candle_row, duckdb_schema_sql
 
 logger = logging.getLogger(__name__)
 
@@ -54,26 +55,11 @@ class DuckDBStorage:
                 else:
                     label = int(candle.close_price > last_close)
                 last_close = candle.close_price
-                rows.append(
-                    (
-                        candle.open_time,
-                        candle.close_time,
-                        candle.open_price,
-                        candle.high_price,
-                        candle.low_price,
-                        candle.close_price,
-                        candle.volume_btc,
-                        candle.volume_usd,
-                        candle.trade_count,
-                        candle.taker_buy_volume_btc,
-                        candle.taker_buy_volume_usd,
-                        label,
-                    )
-                )
+                rows.append(candle_row(candle, label=label))
             conn.executemany(
                 f"""
                 INSERT OR REPLACE INTO {self.table} VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    {", ".join(["?"] * len(CANDLE_COLUMN_ORDER))}
                 )
                 """,
                 rows,
@@ -88,24 +74,7 @@ class DuckDBStorage:
         return inserted_count
 
     def _ensure_schema(self, conn: duckdb.DuckDBPyConnection) -> None:
-        conn.execute(
-            f"""
-            CREATE TABLE IF NOT EXISTS {self.table} (
-                open_time TIMESTAMP PRIMARY KEY,
-                close_time TIMESTAMP,
-                open_price DOUBLE,
-                high_price DOUBLE,
-                low_price DOUBLE,
-                close_price DOUBLE,
-                volume_btc DOUBLE,
-                volume_usd DOUBLE,
-                trade_count BIGINT,
-                taker_buy_volume_btc DOUBLE,
-                taker_buy_volume_usd DOUBLE,
-                price_increase_label INTEGER
-            )
-            """
-        )
+        conn.execute(duckdb_schema_sql(self.table))
         columns = {
             row[1]
             for row in conn.execute(f"PRAGMA table_info('{self.table}')").fetchall()

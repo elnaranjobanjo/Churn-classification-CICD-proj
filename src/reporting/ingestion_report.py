@@ -11,6 +11,7 @@ from reportlab.lib.units import inch
 
 from data_ingestion_service import load_candles_from_duckdb
 from data_ingestion_service.config import load_ingestion_config
+from data_ingestion_service.schema import CANDLE_COLUMN_ORDER
 from .report_maker import ReportMaker
 
 _METRIC_CHARTS = (
@@ -35,23 +36,11 @@ def _report_base_dir() -> Path:
 
 
 def _build_dataframe(candles) -> pd.DataFrame:
-    return pd.DataFrame(
-        [
-            {
-                "open_time": c.open_time,
-                "close_time": c.close_time,
-                "open_price": c.open_price,
-                "close_price": c.close_price,
-                "high_price": c.high_price,
-                "low_price": c.low_price,
-                "volume_btc": c.volume_btc,
-                "volume_usd": c.volume_usd,
-                "trade_count": c.trade_count,
-                "price_increase_label": getattr(c, "price_increase_label", None),
-            }
-            for c in candles
-        ]
-    )
+    rows = [
+        {column: getattr(candle, column, None) for column in CANDLE_COLUMN_ORDER}
+        for candle in candles
+    ]
+    return pd.DataFrame(rows)
 
 
 def _summary_table(df: pd.DataFrame) -> pd.DataFrame:
