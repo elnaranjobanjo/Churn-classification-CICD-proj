@@ -1,7 +1,7 @@
 [project]
-name = "mlflow-project"
+name = "ML-cycle-bitcoin-sandbox"
 version = "0.1.0"
-description = "Housing prices mlflow project"
+description = "Showcasing the full ML cycle using bitcoin trading data."
 requires-python = ">=3.10"
 dependencies = [
     "numpy",
