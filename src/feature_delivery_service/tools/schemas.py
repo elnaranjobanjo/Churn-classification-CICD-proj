@@ -36,6 +36,8 @@ BASE_FIELDS = [
     ("taker_buy_volume_usd", float),
 ]
 
+BASE_COLUMN_NAMES = [name for name, _ in BASE_FIELDS]
+
 BASE_FIELDS_TYPES: Tuple[str, ...] = (
     "TIMESTAMP",
     "TIMESTAMP",

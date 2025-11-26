@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import os
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Sequence
 
 import duckdb
 
@@ -21,21 +21,17 @@ DEFAULT_FEATURE_DB_PATH = Path(
 class DuckDBStorageManager:
     """DuckDB-backed storage for BTC candle features."""
 
-    def __init__(
-        self,
-        db_path: str | Path = DEFAULT_FEATURE_DB_PATH,
-    ) -> None:
-        self.db_path = db_path
-        self.conn = duckdb.connect(str(Path(db_path)))
-
-        if db_path.parent and not db_path.parent.exists():
-            db_path.parent.mkdir(parents=True, exist_ok=True)
+    def __init__(self, db_path: str | Path = DEFAULT_FEATURE_DB_PATH) -> None:
+        self.db_path = Path(db_path)
+        if self.db_path.parent and not self.db_path.parent.exists():
+            self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.conn = duckdb.connect(str(self.db_path))
 
     def upsert(
         self,
         table: str,
-        columns: list[str],
-        types: list[str],
+        columns: Sequence[str],
+        types: Sequence[str],
         items: Iterable,
         sort_key: str,
     ) -> int:
@@ -65,13 +61,18 @@ class DuckDBStorageManager:
             1 for candle in ordered if getattr(candle, sort_key) not in existing
         )
 
-        logger.info("Stored %s BTC candles into %s", inserted_count, self.db_path)
+        logger.info("Stored %s rows into %s", inserted_count, self.db_path)
         return inserted_count
 
     def _ensure_schema(self, schema: str) -> None:
         self.conn.execute(schema)
 
-    def _fetch_existing_keys(self, table: str, keys: list, sort_key: str) -> set:
+    def _fetch_existing_keys(
+        self,
+        table: str,
+        keys: Sequence,
+        sort_key: str,
+    ) -> set:
         if not keys:
             return set()
         placeholders = ",".join(["?"] * len(keys))
@@ -89,8 +90,8 @@ class DuckDBStorageManager:
 
     @staticmethod
     def duckdb_create_table_statement(
-        columns: list[str],
-        types: list[str],
+        columns: Sequence[str],
+        types: Sequence[str],
         table: str,
     ) -> str:
         """Return CREATE TABLE statement using provided schema."""
@@ -115,5 +116,13 @@ class DuckDBStorageManager:
         return identifier
 
     @staticmethod
-    def row(item, columns):
-        return tuple([getattr(item, column) for column in columns])
+    def row(item, columns: Sequence[str]) -> tuple:
+        return tuple(getattr(item, column) for column in columns)
+
+    def close(self) -> None:
+        if getattr(self, "conn", None) is not None:
+            self.conn.close()
+            self.conn = None
+
+    def __del__(self) -> None:
+        self.close()

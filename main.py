@@ -26,13 +26,13 @@ def build_parser() -> ArgumentParser:
     parser = ArgumentParser(
         description="Bitcoin-ML-cycle-sandbox-project orchestration CLI"
     )
-    # subparsers = parser.add_subparsers(dest="command")
+    subparsers = parser.add_subparsers(dest="command")
 
     # Flags reserved for fetching and storing data
-    # ingest_parser = subparsers.add_parser(
-    #     "ingest",
-    #     help="Fetch Bitcoin candles and persist them via DuckDB",
-    # )
+    subparsers.add_parser(
+        "ingest",
+        help="Fetch Bitcoin candles and persist them via DuckDB",
+    )
 
     # Flags reserved for tracking experiments.
     # track_parser = subparsers.add_parser(

@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from .tools.config import load_ingestion_config
 from .tools.singletons import get_binance_client, get_duckdb_storage_manager
-from .tools.schemas import BASE_FIELDS, BASE_FIELDS_TYPES
+from .tools.schemas import BASE_COLUMN_NAMES, BASE_FIELDS_TYPES
 
 logger = logging.getLogger(__name__)
 
@@ -30,13 +30,12 @@ def run_bitcoin_ingestion(
         start_time=config.start_time,
         end_time=config.end_time,
     )
-    column_names = [field for field, _ in BASE_FIELDS]
     new_rows = active_storage.upsert(
         table=config.table,
-        columns=column_names,
+        columns=BASE_COLUMN_NAMES,
         types=list(BASE_FIELDS_TYPES),
         items=candles,
         sort_key="open_time",
     )
-    # total_rows = count_candles(db_path=config.db_path, table=config.table)
-    return new_rows, active_storage.count_rows(config.table)
+    total_rows = active_storage.count_rows(config.table)
+    return new_rows, total_rows
