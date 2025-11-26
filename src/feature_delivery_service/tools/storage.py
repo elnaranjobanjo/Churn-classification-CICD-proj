@@ -8,9 +8,10 @@ from typing import Iterable
 
 import duckdb
 
-from .binance_client import BitcoinCandle
+from .schemas import build_dataclass
 from .config import DEFAULT_FEATURE_DB_PATH
-from .schemas import CANDLE_COLUMN_ORDER, candle_row, duckdb_schema_sql
+
+# from .schemas import CANDLE_COLUMN_ORDER, candle_row, duckdb_schema_sql
 
 logger = logging.getLogger(__name__)
 

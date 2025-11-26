@@ -18,20 +18,18 @@ logger = logging.getLogger(__name__)
 
 
 def run_bitcoin_ingestion(
-    config_path: Optional[Path] = None,
-    *,
-    client: Optional[BinanceClient] = None,
+    # client: Optional[BinanceClient] = None,
     # storage: Optional[DuckDBStorage] = None,
 ) -> None:
     """Fetch BTC candles using config and persist them via DuckDB."""
-    config = load_ingestion_config(config_path)
+    config = load_ingestion_config()
     logger.info(
         "Running BTC ingestion interval=%s limit=%s table=%s",
         config.interval,
         config.limit,
         config.table,
     )
-    active_client = get_binance_client(config, client)
+    active_client = get_binance_client()
     # active_storage = get_duckdb_storage(config, storage)
     candles = active_client.fetch_candles(
         interval=config.interval,

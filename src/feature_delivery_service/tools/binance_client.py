@@ -4,17 +4,20 @@ from __future__ import annotations
 
 import json
 import logging
-from dataclasses import dataclass
-from datetime import datetime
-from typing import List, Optional, Sequence
+import os
+from typing import List, Optional
 from urllib import error, parse, request
-
-from .config import DEFAULT_BINANCE_BASE_URL, DEFAULT_BITCOIN_SYMBOL
 from .schemas import build_BitcoinCandle
 
 BitcoinCandle = build_BitcoinCandle()
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_BINANCE_BASE_URL = os.getenv(
+    "BINANCE_BASE_URL",
+    "https://api.binance.com/api/v3/klines",
+)
+DEFAULT_BITCOIN_SYMBOL = os.getenv("BINANCE_SYMBOL", "BTCUSDT")
 
 _USER_AGENT = "MLFlowProject/bitcoin-ingest"
 

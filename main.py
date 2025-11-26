@@ -32,12 +32,6 @@ def build_parser() -> ArgumentParser:
         "ingest",
         help="Fetch Bitcoin candles and persist them via DuckDB",
     )
-    ingest_parser.add_argument(
-        "--config",
-        type=Path,
-        default=Path(os.getenv("INGEST_CONFIG", "config/bitcoin_ingest.json")),
-        help="Optional path to ingestion JSON config",
-    )
 
     # Flags reserved for tracking experiments.
     # track_parser = subparsers.add_parser(
@@ -79,7 +73,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     args = parser.parse_args(argv)
 
     if args.command == "ingest":
-        new_rows, total_rows = run_bitcoin_ingestion(args.config)
+        new_rows, total_rows = run_bitcoin_ingestion()
         # logger.info("Stored %s new BTC candles (total=%s)", new_rows, total_rows)
         # report_path = generate_ingestion_report()
         # logger.info("Generated ingestion report at %s", report_path)
