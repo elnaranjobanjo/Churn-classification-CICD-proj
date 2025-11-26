@@ -47,27 +47,23 @@ class DuckDBStorageManager:
             logger.info("No candles supplied for DuckDB storage")
             return 0
 
-        conn = duckdb.connect(str(self.db_path))
-        try:
-            self._ensure_schema(
-                self.duckdb_create_table_statement(columns, types, table)
-            )
-            existing = self._fetch_existing_keys(conn, [c.open_time for c in ordered])
-            rows = [self.row(item) for item in ordered]
-            placeholders = ", ".join(["?"] * len(columns))
-            columns_str = ", ".join(columns)
-            conn.executemany(
-                f"""
-                INSERT OR REPLACE INTO {table} ({columns_str})
-                VALUES ({placeholders})
-                """,
-                rows,
-            )
-            inserted_count = sum(
-                1 for candle in ordered if candle.open_time not in existing
-            )
-        finally:
-            self.conn.close()
+        self._ensure_schema(
+            self.duckdb_create_table_statement(columns, types, table)
+        )
+        existing = self._fetch_existing_keys(table, [getattr(c, sort_key) for c in ordered], sort_key)
+        rows = [self.row(item, columns) for item in ordered]
+        placeholders = ", ".join(["?"] * len(columns))
+        columns_str = ", ".join(columns)
+        self.conn.executemany(
+            f"""
+            INSERT OR REPLACE INTO {table} ({columns_str})
+            VALUES ({placeholders})
+            """,
+            rows,
+        )
+        inserted_count = sum(
+            1 for candle in ordered if getattr(candle, sort_key) not in existing
+        )
 
         logger.info("Stored %s BTC candles into %s", inserted_count, self.db_path)
         return inserted_count
@@ -84,6 +80,12 @@ class DuckDBStorageManager:
             keys,
         ).fetchall()
         return {row[0] for row in rows}
+
+    def count_rows(self, table: str) -> int:
+        """Return the number of rows stored in the given table."""
+        table = self._validated_identifier(table)
+        result = self.conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()
+        return int(result[0] if result else 0)
 
     @staticmethod
     def duckdb_create_table_statement(

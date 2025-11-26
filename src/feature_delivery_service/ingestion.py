@@ -39,5 +39,4 @@ def run_bitcoin_ingestion(
         sort_key="open_time",
     )
     # total_rows = count_candles(db_path=config.db_path, table=config.table)
-    return new_rows  # , total_rows
-    # return 0, 0
+    return new_rows, active_storage.count_rows(config.table)

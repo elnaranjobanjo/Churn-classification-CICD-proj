@@ -74,7 +74,7 @@ def main(argv: Optional[list[str]] = None) -> None:
 
     if args.command == "ingest":
         new_rows, total_rows = run_bitcoin_ingestion()
-        # logger.info("Stored %s new BTC candles (total=%s)", new_rows, total_rows)
+        logger.info("Stored %s new BTC candles (total=%s)", new_rows, total_rows)
         # report_path = generate_ingestion_report()
         # logger.info("Generated ingestion report at %s", report_path)
         return
