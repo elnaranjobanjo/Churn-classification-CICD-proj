@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import os
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Any, Callable, Iterable, Sequence
 
 import duckdb
 
@@ -63,6 +63,45 @@ class DuckDBStorageManager:
 
         logger.info("Stored %s rows into %s", inserted_count, self.db_path)
         return inserted_count
+
+    def fetch_rows(
+        self,
+        table: str,
+        columns: Sequence[str],
+        *,
+        limit: int | None = None,
+        order_by: str | None = None,
+        order_desc: bool = False,
+        row_factory: Callable[[tuple], Any] | None = None,
+    ) -> list[Any]:
+        """Return ordered rows from a table, optionally applying a row factory."""
+        if not columns:
+            raise ValueError("columns must include at least one field")
+
+        table = self._validated_identifier(table)
+        order_column = (
+            self._validated_identifier(order_by)
+            if order_by
+            else self._validated_identifier(columns[0])
+        )
+        column_clause = ", ".join(columns)
+        order_clause = "DESC" if order_desc else "ASC"
+        query = f"""
+            SELECT {column_clause}
+            FROM {table}
+            ORDER BY {order_column} {order_clause}
+        """
+        params: list[int] = []
+        if limit is not None:
+            if limit <= 0:
+                raise ValueError("limit must be positive when provided")
+            query += " LIMIT ?"
+            params.append(limit)
+
+        rows = self.conn.execute(query, params).fetchall()
+        if row_factory is None:
+            return rows
+        return [row_factory(row) for row in rows]
 
     def _ensure_schema(self, schema: str) -> None:
         self.conn.execute(schema)
