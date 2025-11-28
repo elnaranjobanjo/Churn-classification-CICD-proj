@@ -88,3 +88,18 @@ def build_BitcoinCandle():
 
     BitcoinCandle.from_binance = _from_binance
     return BitcoinCandle
+
+
+LABELED_EXTRA_FIELDS = [
+    ("close_price_gt_prev", int),
+    ("next_close_price_gt_curr", int),
+]
+LABELED_COLUMN_NAMES = BASE_COLUMN_NAMES + [field for field, _ in LABELED_EXTRA_FIELDS]
+LABELED_FIELD_TYPES = BASE_FIELDS_TYPES + ("TINYINT", "TINYINT")
+
+
+def build_LabeledBitcoinCandle():
+    return build_dataclass(
+        fields=BASE_FIELDS + LABELED_EXTRA_FIELDS,
+        name="LabeledBitcoinCandle",
+    )
