@@ -7,7 +7,7 @@ from typing import Optional
 
 from MLOps_service import run_training_with_tracking
 
-# from MLOps.registry import register_run
+from MLOps_service import register_run
 from feature_delivery_service import ingest_and_label
 from reporting import generate_ingestion_report
 
@@ -49,22 +49,22 @@ def build_parser() -> ArgumentParser:
         help="Optional MLFlow run name",
     )
 
-    # # Flags reserved for model registration
-    # register_parser = subparsers.add_parser(
-    #     "register",
-    #     help="Register a tracked run's model in the MLFlow registry",
-    # )
-    # register_parser.add_argument("--run-id", required=True, help="Run ID to register")
-    # register_parser.add_argument(
-    #     "--model-name",
-    #     required=True,
-    #     help="Model name to use in the registry",
-    # )
-    # register_parser.add_argument(
-    #     "--alias",
-    #     default=None,
-    #     help="Optional alias (e.g., staging, prod) for the registered version",
-    # )
+    # Flags reserved for model registration
+    register_parser = subparsers.add_parser(
+        "register",
+        help="Register a tracked run's model in the MLFlow registry",
+    )
+    register_parser.add_argument("--run-id", required=True, help="Run ID to register")
+    register_parser.add_argument(
+        "--model-name",
+        required=True,
+        help="Model name to use in the registry",
+    )
+    register_parser.add_argument(
+        "--alias",
+        default=None,
+        help="Optional alias (e.g., staging, prod) for the registered version",
+    )
 
     return parser
 
@@ -94,15 +94,15 @@ def main(argv: Optional[list[str]] = None) -> None:
         logger.info("Tracking run finished")
         return
 
-    # if args.command == "register":
-    #     logger.info(
-    #         "Registering run %s into model %s",
-    #         args.run_id,
-    #         args.model_name,
-    #     )
-    #     register_run(args.run_id, args.model_name, args.alias)
-    #     logger.info("Registration finished")
-    #     return
+    if args.command == "register":
+        logger.info(
+            "Registering run %s into model %s",
+            args.run_id,
+            args.model_name,
+        )
+        register_run(args.run_id, args.model_name, args.alias)
+        logger.info("Registration finished")
+        return
 
 
 if __name__ == "__main__":
