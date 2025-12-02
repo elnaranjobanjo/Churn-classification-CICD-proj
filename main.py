@@ -5,9 +5,10 @@ from argparse import ArgumentParser
 from pathlib import Path
 from typing import Optional
 
-# from MLOps.tracking import run_training_with_tracking
+from MLOps_service import run_training_with_tracking
+
 # from MLOps.registry import register_run
-from feature_delivery_service import run_bitcoin_ingestion
+from feature_delivery_service import ingest_and_label
 from reporting import generate_ingestion_report
 
 LOG_FORMAT = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
@@ -34,19 +35,19 @@ def build_parser() -> ArgumentParser:
     )
 
     # Flags reserved for tracking experiments.
-    # track_parser = subparsers.add_parser(
-    #     "track", help="Train model and log results with MLFlow"
-    # )
-    # track_parser.add_argument(
-    #     "--experiment",
-    #     default="default",
-    #     help="MLFlow experiment name",
-    # )
-    # track_parser.add_argument(
-    #     "--run-name",
-    #     default=None,
-    #     help="Optional MLFlow run name",
-    # )
+    track_parser = subparsers.add_parser(
+        "track", help="Train model and log results with MLFlow"
+    )
+    track_parser.add_argument(
+        "--experiment",
+        default="default",
+        help="MLFlow experiment name",
+    )
+    track_parser.add_argument(
+        "--run-name",
+        default=None,
+        help="Optional MLFlow run name",
+    )
 
     # # Flags reserved for model registration
     # register_parser = subparsers.add_parser(
@@ -73,17 +74,25 @@ def main(argv: Optional[list[str]] = None) -> None:
     args = parser.parse_args(argv)
 
     if args.command == "ingest":
-        new_rows, total_rows = run_bitcoin_ingestion()
-        logger.info("Stored %s new BTC candles (total=%s)", new_rows, total_rows)
+        summary = ingest_and_label()
+        logger.info(
+            "Stored %s new BTC candles (total=%s)",
+            summary["ingested_rows"],
+            summary["total_rows"],
+        )
+        logger.info(
+            "Materialized %s labeled BTC candles",
+            summary["labeled_rows"],
+        )
         report_path = generate_ingestion_report()
         logger.info("Generated ingestion report at %s", report_path)
         return
 
-    # if args.command == "track":
-    #     logger.info("Executing tracked training run")
-    #     run_training_with_tracking(args.experiment, args.run_name)
-    #     logger.info("Tracking run finished")
-    #     return
+    if args.command == "track":
+        logger.info("Executing tracked training run")
+        run_training_with_tracking(args.experiment, args.run_name)
+        logger.info("Tracking run finished")
+        return
 
     # if args.command == "register":
     #     logger.info(

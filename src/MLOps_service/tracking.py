@@ -6,8 +6,9 @@ import logging
 from typing import Optional
 
 import mlflow
+import mlflow.sklearn
 
-from ml.training import train_xgboost
+from model_training_service import train_next_move_logistic_classifier
 
 logger = logging.getLogger(__name__)
 
@@ -16,11 +17,11 @@ def run_training_with_tracking(
     experiment_name: str = "default",
     run_name: Optional[str] = None,
 ) -> None:
-    """Train an XGBoost model while logging metrics to MLFlow."""
+    """Train the next-move classifier and log metrics/artifacts in MLFlow."""
     mlflow.set_experiment(experiment_name)
     with mlflow.start_run(run_name=run_name):
         logger.info("Starting MLFlow run in experiment %s", experiment_name)
-        result = train_xgboost()
+        result = train_next_move_logistic_classifier()
 
         params = result.model.get_params()
         mlflow.log_params(params)
@@ -28,9 +29,9 @@ def run_training_with_tracking(
         for metric_name, value in result.metrics.items():
             mlflow.log_metric(metric_name, value)
 
-        mlflow.xgboost.log_model(
-            result.model,
-            name="model",
+        mlflow.sklearn.log_model(
+            sk_model=result.model,
+            artifact_path="model",
             input_example=result.input_example,
             registered_model_name=None,
         )

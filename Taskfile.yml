@@ -24,17 +24,17 @@ tasks:
     cmds:
       - |
         uv run python main.py track \
-          --experiment ${EXPERIMENT:-housing-prices} \
+          --experiment ${EXPERIMENT:-bitcoin_preds} \
           ${RUN_NAME:+--run-name "$RUN_NAME"}
-  register:
-    desc: Register a tracked run's model in the MLFlow registry
-    deps: [sync]
-    cmds:
-      - |
-        uv run python main.py register \
-          --run-id ${RUN_ID:?RUN_ID required} \
-          --model-name ${MODEL_NAME:-housing-prices-model} \
-          ${MODEL_ALIAS:+--alias "$MODEL_ALIAS"}
+  # register:
+  #   desc: Register a tracked run's model in the MLFlow registry
+  #   deps: [sync]
+  #   cmds:
+  #     - |
+  #       uv run python main.py register \
+  #         --run-id ${RUN_ID:?RUN_ID required} \
+  #         --model-name ${MODEL_NAME:-housing-prices-model} \
+  #         ${MODEL_ALIAS:+--alias "$MODEL_ALIAS"}
   mlflow-ui:
     desc: Launch the MLFlow local UI
     deps: [sync]
