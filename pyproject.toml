@@ -13,6 +13,8 @@ dependencies = [
     "duckdb",
     "reportlab",
     "matplotlib",
+    "fastapi",
+    "uvicorn",
 ]
 
 [project.optional-dependencies]

@@ -29,6 +29,19 @@ This project is a lightweight, end-to-end sandbox for the ML lifecycle focused o
 task ingest
 ```
 
+## Serving the Model via API
+
+The `src/api` module provides a FastAPI scaffold for serving registered MLflow models.
+
+```bash
+# start the API (MODEL_URI defaults to models:/bitcoin-model@production)
+MODEL_URI=models:/bitcoin-model@production uv run uvicorn api.app:app --host 0.0.0.0 --port 8000
+```
+
+Endpoints:
+- `GET /health` — readiness probe.
+- `POST /predict` — accepts `{"features": [ ... ]}` and proxies the payload to the loaded model.
+
 Relevant environment variables (see `.env`):
 - `INGEST_CONFIG`: path to the Binance ingestion config
 - `FEATURE_DB_PATH`: DuckDB location
